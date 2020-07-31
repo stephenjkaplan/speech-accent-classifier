@@ -1,0 +1,9 @@
+name: speechaccentclassifier
+dependencies:
+  - python=3.7
+  - pandas
+  - sqlalchemy
+  - psycopg2
+  - seaborn
+  - pip:
+      python_speech_features
