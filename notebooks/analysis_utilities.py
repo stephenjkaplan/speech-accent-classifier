@@ -8,7 +8,7 @@ from sklearn.model_selection import KFold
 from sklearn.metrics import accuracy_score, precision_recall_fscore_support, roc_auc_score
 
 
-def fit_and_cross_validate_score_model(estimator, X, y):
+def fit_and_cross_validate_score_model(estimator, X, y, threshold=0.5):
     """
 
     :param estimator:
@@ -17,7 +17,7 @@ def fit_and_cross_validate_score_model(estimator, X, y):
     :return:
     """
     # scale data if algorithm requires it
-    if estimator[0] in ['K-Nearest Neighbors', 'Logistic Regression', 'SVM']:
+    if estimator[1].__class__.__name__ in ['KNeighborsClassifier', 'LogisticRegression', 'SVM']:
         scaler = StandardScaler()
         X = pd.DataFrame(scaler.fit_transform(X))
 
@@ -30,14 +30,14 @@ def fit_and_cross_validate_score_model(estimator, X, y):
     recall_true = []
     f1_true = []
 
-    kf = KFold(n_splits=5, shuffle=True)
+    kf = KFold(n_splits=5, shuffle=True, random_state=0)
     for train_index, val_index in kf.split(X):
         X_train, X_val = X.iloc[train_index], X.iloc[val_index]
         y_train, y_val = y.iloc[train_index], y.iloc[val_index]
 
         # fit model
         estimator[1].fit(X_train, y_train)
-        y_pred = estimator[1].predict(X_val)
+        y_pred = estimator[1].predict_proba(X_val)[:, 1] > threshold
 
         # calculate metrics
         y_scores = [y[1] for y in estimator[1].predict_proba(X_val)]
@@ -73,7 +73,7 @@ def fit_and_cross_validate_score_roc_auc(estimator, X, y):
     :return:
     """
     # scale data if algorithm requires it
-    if estimator[0] in ['K-Nearest Neighbors', 'Logistic Regression', 'SVM']:
+    if estimator[1].__class__.__name__ in ['KNeighborsClassifier', 'LogisticRegression', 'SVM']:
         scaler = StandardScaler()
         X = pd.DataFrame(scaler.fit_transform(X))
 
@@ -82,7 +82,7 @@ def fit_and_cross_validate_score_roc_auc(estimator, X, y):
     accuracies_train = []
     accuracies_val = []
 
-    kf = KFold(n_splits=5, shuffle=True)
+    kf = KFold(n_splits=5, shuffle=True, random_state=0)
     for train_index, val_index in kf.split(X):
         X_train, X_val = X.iloc[train_index], X.iloc[val_index]
         y_train, y_val = y.iloc[train_index], y.iloc[val_index]
@@ -103,6 +103,52 @@ def fit_and_cross_validate_score_roc_auc(estimator, X, y):
 
     return {
         'Model': estimator[0],
+        'ROC AUC (Train)':  np.mean(auc_train),
+        'ROC AUC (Val)': np.mean(auc_val),
+    }
+
+
+def fit_and_cross_validate_score_roc_auc_xgboost(xgb_model, X, y):
+    """
+
+    :param estimator:
+    :param X:
+    :param y:
+    :return:
+    """
+    auc_train = []
+    auc_val = []
+    accuracies_train = []
+    accuracies_val = []
+
+    kf = KFold(n_splits=5, shuffle=True, random_state=0)
+    for train_index, val_index in kf.split(X):
+        X_train, X_val = X.iloc[train_index], X.iloc[val_index]
+        y_train, y_val = y.iloc[train_index], y.iloc[val_index]
+
+        # fit model
+        eval_set = [(X_train, y_train), (X_val, y_val)]
+        xgb_model[1].fit(
+            X_train, y_train,
+            eval_set=eval_set,
+            eval_metric='error',  # new evaluation metric: classification error (could also use AUC, e.g.)
+            early_stopping_rounds=50,
+            verbose=False
+        )
+        y_pred_train = xgb_model[1].predict(X_train, ntree_limit=xgb_model[1].best_ntree_limit)
+        y_pred_val = xgb_model[1].predict(X_val)
+
+        # calculate metrics
+        y_scores_train = [y[1] for y in xgb_model[1].predict_proba(X_train, ntree_limit=xgb_model[1].best_ntree_limit)]
+        y_scores_val = [y[1] for y in xgb_model[1].predict_proba(X_val, ntree_limit=xgb_model[1].best_ntree_limit)]
+
+        auc_train.append(roc_auc_score(y_train, y_scores_train))
+        auc_val.append(roc_auc_score(y_val, y_scores_val))
+        accuracies_train.append(accuracy_score(y_train, y_pred_train))
+        accuracies_val.append(accuracy_score(y_val, y_pred_val))
+
+    return {
+        'Model': xgb_model[0],
         'ROC AUC (Train)':  np.mean(auc_train),
         'ROC AUC (Val)': np.mean(auc_val),
     }

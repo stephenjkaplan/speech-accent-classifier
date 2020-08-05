@@ -5,5 +5,7 @@ dependencies:
   - sqlalchemy
   - psycopg2
   - seaborn
+  - xgboost
   - pip:
-      python_speech_features
+      - python_speech_features
+      - flask

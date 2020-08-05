@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container border border-dark rounded outer-container">
+
+  <div style="padding-bottom: 10px;">
+    <h2>Identifying Accents with Machine Learning</h2>
+    <h6>
+      Classifying accents as "American" or "non-American" through a
+      model trained on MFCC data extracted from audio files.
+    </h6>
+
+  <p style="padding-top: 10px; ">
+    <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+      More Info
+    </a>
+  </p>
+  <div class="collapse" id="collapseExample">
+    <div style="margin-bottom: 20px;" class="card card-body">
+      Coming soon...
+    </div>
+  </div>
+    {% if mfcc_coefficients %}
+    <h3 align="center">The model is <b style="color:DodgerBlue;">{{ probability }}%</b> sure that the accent is <b style="color:DodgerBlue;">{{ prediction }}</b>.</h3>
+    {% endif %}
+
+  </div>
+
+  <div class="row" style="margin-top: 10px;">
+    <div class="col-sm">
+
+      <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          {% if country %}
+            {{country}}
+          {% else %}
+            Select Country
+          {% endif %}
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" id="countryDropdown">
+          {% for country in country_options %}
+                  <a class="dropdown-item" href="/country/{{ country }}">{{ country }}</a>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div id="map" align="center"></div>
+      <div style="margin-left: 20px;">
+        {% if audio_file %}
+        <h5>Sample of Native Speaker</h5>
+        <div id="waveform"></div>
+        <div style="margin-top: 10px;margin-left: 10px;">
+        <audio controls>
+          <source src="{{ url_for('static', filename='audio/' + audio_file) }}" type="audio/wav">
+        </audio>
+        </div>
+
+        {% endif %}
+      </div>
+
+    </div>
+
+    <div class="col-sm" style="margin-right: 20px;">
+      {% if mfcc_coefficients %}
+      The sliders below default to the "MFCC Coefficients" from the audio sample. Explore how the values change the
+      accent predictions.
+      <form id='xValues' method="POST" action="/predict_accent/{{ country }}">
+      {% for m in mfcc_coefficients %}
+        <div class="slidecontainer" style="margin-top: 5px;">
+          <small><b>x{{loop.index}} = </b></small><small id="output-{{loop.index}}"></small>
+          <input type="range" min="-25" max="25" value="{{ m }}" step="0.01" class="slider" id="range-{{loop.index}}" name="x{{loop.index}}">
+        </div>
+      {% endfor %}
+      </form>
+      {% endif %}
+    </div>
+
+    <script>
+    // CHOROPLETH MAP
+
+	var data = [{
+            type: 'choropleth',
+            locations: ['{{ country }}'],
+            locationmode: 'country names',
+            z: [1],
+            text: '',
+            hoverinfo: 'none',
+            showscale: false
+    }];
+
+    var layout = {
+        geo:{
+            showframe: false,
+            showcoastlines: true,
+            projection:{type: 'robinson'},
+            lonaxis: {range: [-150, 37]},
+            lataxis: {range: [0, 80]},
+            resolution: 50
+        },
+        margin:{l: 0, r: 0, t: 0, b: 0, pad: 0},
+        width: 400,
+        height: 300
+    };
+
+    Plotly.newPlot("map", data, layout, {showLink: false, displayModeBar: false}, );
+    </script>
+    {% if waveform_data_x %}
+    <script>
+      // WAVEFORM
+      const X = {{ waveform_data_x | safe }};
+      const Y = {{ waveform_data_y | safe }};
+      var data = [{
+        x: X,
+        y: Y,
+        mode: 'lines'
+      }];
+
+      var layout = {
+        width: 400,
+        height: 200,
+        margin:{l: 0, r: 0, t: 0, b: 0, pad: 0},
+        xaxis: {showgrid: false, zeroline: false},
+        yaxis: {showgrid: false},
+      };
+
+      Plotly.newPlot('waveform', data, layout, {displayModeBar: false});
+    </script>
+    {% endif %}
+
+    {% if mfcc_coefficients %}
+    <script>
+    {% for m in mfcc_coefficients %}
+
+    var slider_{{loop.index}} = document.getElementById("range-{{loop.index}}");
+    var output_{{loop.index}} = document.getElementById("output-{{loop.index}}");
+    output_{{loop.index}}.innerHTML = slider_{{loop.index}}.value; // Display the default slider value
+
+    // Update the current slider value (each time you drag the slider handle)
+    slider_{{loop.index}}.oninput = function() {
+      output_{{loop.index}}.innerHTML = this.value;
+      document.getElementById("xValues").submit();
+    }
+    {% endfor %}
+    </script>
+    {% endif %}
+
+  </div>
+
+</div>
+
+{% endblock %}
+
+
+
