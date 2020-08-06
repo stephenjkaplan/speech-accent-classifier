@@ -8,7 +8,7 @@
     <h2>Identifying Accents with Machine Learning</h2>
     <h6>
       Classifying accents as "American" or "non-American" through a
-      model trained on MFCC data extracted from audio files.
+      model trained on <a href="https://en.wikipedia.org/wiki/Mel-frequency_cepstrum">MFCC data</a> extracted from audio files.
     </h6>
 
   <p style="padding-top: 10px; ">
@@ -63,7 +63,7 @@
 
     <div class="col-sm" style="margin-right: 20px;">
       {% if mfcc_coefficients %}
-      The sliders below default to the "MFCC Coefficients" from the audio sample. Explore how the values change the
+      The sliders below default to the <a href="https://en.wikipedia.org/wiki/Mel-frequency_cepstrum">MFCC coefficients</a> from the audio sample. Explore how the values change the
       accent predictions.
       <form id='xValues' method="POST" action="/predict_accent/{{ country }}">
       {% for m in mfcc_coefficients %}
