@@ -10,9 +10,11 @@ from sklearn.metrics import accuracy_score, precision_recall_fscore_support, roc
 
 def fit_and_cross_validate_score_model(estimator, X, y, threshold=0.5):
     """
+    Cross validates and calculates the following average validation scores on the model: Accuracy, ROC AUC, Precision,
+    Recall, and F1.
 
-    :param estimator:
-    :param X:
+    :param tuple estimator:
+    :param pandas.DataFrame X:
     :param y:
     :return:
     """
@@ -114,13 +116,14 @@ def fit_and_cross_validate_score_roc_auc_xgboost(xgb_model, X, y):
     :param estimator:
     :param X:
     :param y:
-    :return:
+    :return: Dictionary containing the name of the model, the training ROC AUC score, and the validation ROC AUC score.
     """
     auc_train = []
     auc_val = []
     accuracies_train = []
     accuracies_val = []
 
+    # split data into 5 folds for cross validation
     kf = KFold(n_splits=5, shuffle=True, random_state=0)
     for train_index, val_index in kf.split(X):
         X_train, X_val = X.iloc[train_index], X.iloc[val_index]
@@ -156,17 +159,21 @@ def fit_and_cross_validate_score_roc_auc_xgboost(xgb_model, X, y):
 
 def plot_distribution_pair(d1, d2, d1_label, d2_label, tick_min, tick_max, tick_interval, n_bins):
     """
+    Overlays 2 distributions in the same units.
 
-    :param d1:
-    :param d2:
-    :param d1_label:
-    :param d2_label:
-    :param tick_min:
-    :param tick_max:
-    :param tick_interval:
-    :param n_bins:
+    :param list d1: Numpy array or list containing the first distribution.
+    :param list d2: Numpy array or list containing the second distribution.
+    :param str d1_label: Legend label for the first distribution.
+    :param str d2_label: Legend label for the second distribution.
+    :param int tick_min: Value of the lowest tick on the x axis.
+    :param int tick_max: Value of the highest tick on the x axis.
+    :param int tick_interval: Interval of ticks on x axis.
+    :param int n_bins: Number of bins to break the distribution into for plotting purposes.
     """
+    # plot distributions
     sns.distplot(d1, bins=n_bins)
     d = sns.distplot(d2, bins=n_bins)
+
+    # format plot
     d.set_xticks(range(tick_min, tick_max, tick_interval))
     plt.legend([d1_label, d2_label])

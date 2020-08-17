@@ -18,12 +18,12 @@ blog post about it is  [here](https://stephenjkaplan.github.io/).
 #### Data Source
 Fokoue, E. (2020). [UCI Machine Learning Repository - Speaker Accent Recognition Data Set](https://archive.ics.uci.edu/ml/datasets/Speaker+Accent+Recognition). Irvine, CA: University of California, School of Information and Computer Science.
 
-
 #### File Contents
-* `flask_app/` contains all of the contents for the web application. Running `flask_app/views.py` will launch the 
-   Flask app.
+* Running `main.py` will launch the Flask app locally.
+* `utilities.py` contains files needed for the Flask app to run.
 * `notebooks/` contains the Jupyter Notebook used to do all data analysis and modeling, as well as an accompanying 
    file of Python functions.
+* `presentation.pptx` contains the mock business presentation I made for the Metis course.
 
 #### Dependencies
 
@@ -31,5 +31,3 @@ The contents of `/notebooks` can't be fully run because the Jupyter Notebook con
 to install the dependencies for the flask app, run:
 
 `pip install -r requirements.txt`
-
-in `/flask_app`.

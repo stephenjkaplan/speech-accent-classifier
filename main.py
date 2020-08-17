@@ -6,6 +6,7 @@ from utilities import predict_is_american_accent, get_audio_waveform_data
 # create a flask object
 app = Flask(__name__, static_folder='static', template_folder='templates')
 
+# lookup table for the audio samples and MFCC coefficient used for each country of origin example
 COUNTRY_INFO_LOOKUP = {
     'United States': ('US-M-2-3.wav', [5.9578, -3.2668, 2.7247, 12.4591, -7.9111, 8.4236,
                                        -9.1457, 2.3896, 0.1328, -0.9990, 2.9071, -5.4766]),
@@ -24,6 +25,9 @@ COUNTRY_INFO_LOOKUP = {
 
 @app.route('/')
 def entry_page():
+    """
+    Loads initial home page.
+    """
     country_options = ['United States', 'United Kingdom', 'France', 'Spain', 'Germany', 'Italy']
 
     return render_template('accents.html', country_options=country_options, country='', audio_file=None)
@@ -31,9 +35,13 @@ def entry_page():
 
 @app.route('/country/<country>', methods=['GET', 'POST'])
 def select_country(country):
+    """
+    Reloads page with correct audio file, map location, waveform, and MFCC coefficients for country selected.
+
+    :param str country: Selected country.
+    """
     waveform_data = get_audio_waveform_data(f'static/audio/{COUNTRY_INFO_LOOKUP[country][0]}')
     mfcc_coefficients = COUNTRY_INFO_LOOKUP[country][1]
-    p = predict_is_american_accent(mfcc_coefficients)
     return render_template('accents.html',
                            country_options=[key for key in COUNTRY_INFO_LOOKUP.keys()],
                            country=country,
@@ -41,12 +49,16 @@ def select_country(country):
                            waveform_data_x=json.dumps(waveform_data[0]),
                            waveform_data_y=json.dumps(waveform_data[1]),
                            mfcc_coefficients=mfcc_coefficients,
-                           prediction=p[0],
-                           probability=round(100 * p[1], 2))
+                           prediction=predict_is_american_accent(mfcc_coefficients))
 
 
 @app.route('/predict_accent/<country>', methods=['GET', 'POST'])
 def predict_accent(country):
+    """
+    Reloads page after user changes MFCC coefficients with slider.
+
+    :param str country: Selected country.
+    """
 
     mfcc_labels = ['x1', 'x2', 'x3', 'x4', 'x5', 'x6', 'x7', 'x8', 'x9', 'x10', 'x11', 'x12']
     mfcc = []
@@ -56,7 +68,6 @@ def predict_accent(country):
         float_mfcc = float(user_input)
         mfcc.append(float_mfcc)
 
-    p = predict_is_american_accent(mfcc)
     waveform_data = get_audio_waveform_data(f'static/audio/{COUNTRY_INFO_LOOKUP[country][0]}')
     return render_template('accents.html',
                            country_options=[key for key in COUNTRY_INFO_LOOKUP.keys()],
@@ -65,8 +76,7 @@ def predict_accent(country):
                            waveform_data_x=json.dumps(waveform_data[0]),
                            waveform_data_y=json.dumps(waveform_data[1]),
                            mfcc_coefficients=mfcc,
-                           prediction=p[0],
-                           probability=round(100*p[1], 2))
+                           prediction=predict_is_american_accent(mfcc))
 
 
 if __name__ == '__main__':
