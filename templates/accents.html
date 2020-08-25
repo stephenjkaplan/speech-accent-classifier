@@ -18,7 +18,21 @@
   </p>
   <div class="collapse" id="collapseExample">
     <div style="margin-bottom: 20px;" class="card card-body">
-      Coming soon...
+    <p>
+      Classifying audio of human speech into various accents/countries of origin using
+      <a href="https://en.wikipedia.org/wiki/Mel-frequency_cepstrum" target="_blank">MFCC coefficients</a> extracted
+      from audio .wav files.
+    </p>
+    <p>
+      The model predicting accents is an ensemble of K-Nearest Neighbor and Logistic Regression. The overall predictive
+      accuracy of the model is 0.89 and it has an ROC AUC score of 0.95.
+    </p>
+
+    <p>
+      This was developed over a 2-week span in August 2020 as a project for the
+      <a href="https://thisismetis.com" target="_blank">Metis</a>The blog post about it is
+      <a href="https://stephenjkaplan.github.io/" target="_blank">here</a>.
+    </p>
     </div>
   </div>
     {% if mfcc_coefficients %}

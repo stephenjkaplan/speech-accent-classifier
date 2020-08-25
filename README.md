@@ -7,13 +7,12 @@ I made using Flask.
 Classifying audio of human speech into various accents/countries of origin using 
 [MFCC coefficients](https://en.wikipedia.org/wiki/Mel-frequency_cepstrum) extracted from audio .wav files.
 
-The popularity of a track is algorithmically calculated, and is a combination of how many plays a track has and 
-how recent those plays are. This was developed over a 2-week span in August 2020 as a project for 
-the [Metis](https://thisismetis.com) data science program.
-
 The model in `flask_app/static/sklearn_models/final_model.pkl` is an ensemble of K-Nearest Neighbor and Logistic 
 Regression models. The overall predictive accuracy of the model is `0.89` and it has an ROC AUC score of `0.95`. The 
 blog post about it is  [here](https://stephenjkaplan.github.io/).
+
+This was developed over a 2-week span in August 2020 as a project for the [Metis](https://thisismetis.com) data science 
+program.
 
 #### Data Source
 Fokoue, E. (2020). [UCI Machine Learning Repository - Speaker Accent Recognition Data Set](https://archive.ics.uci.edu/ml/datasets/Speaker+Accent+Recognition). Irvine, CA: University of California, School of Information and Computer Science.
