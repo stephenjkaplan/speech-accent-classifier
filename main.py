@@ -77,7 +77,3 @@ def predict_accent(country):
                            waveform_data_y=json.dumps(waveform_data[1]),
                            mfcc_coefficients=mfcc,
                            prediction=predict_is_american_accent(mfcc))
-
-
-if __name__ == '__main__':
-    app.run(debug=True)
