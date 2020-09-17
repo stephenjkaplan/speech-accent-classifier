@@ -3,6 +3,8 @@
 Play around with the model and make predictions using the [web app](https://accent-identification.appspot.com/)
 I made using Flask.
 
+Read the [blog post](https://stephenjkaplan.github.io/2020/08/25/speech-accent-classifier/).
+
 #### Description
 Classifying audio of human speech into various accents/countries of origin using 
 [MFCC coefficients](https://en.wikipedia.org/wiki/Mel-frequency_cepstrum) extracted from audio .wav files.
