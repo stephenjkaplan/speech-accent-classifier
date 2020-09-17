@@ -1,6 +1,6 @@
 # Speech Accent Classifier
 
-Play around with the model and make predictions using the [web app](https://accent-identification.appspot.com/)
+Play around with the model and make predictions using the [web app](https://speech-accent-classifier.herokuapp.com/)
 I made using Flask.
 
 Read the [blog post](https://stephenjkaplan.github.io/2020/08/25/speech-accent-classifier/).
@@ -11,7 +11,7 @@ Classifying audio of human speech into various accents/countries of origin using
 
 The model in `flask_app/static/sklearn_models/final_model.pkl` is an ensemble of K-Nearest Neighbor and Logistic 
 Regression models. The overall predictive accuracy of the model is `0.89` and it has an ROC AUC score of `0.95`. The 
-blog post about it is  [here](https://stephenjkaplan.github.io/).
+blog post about it is  [here](https://stephenjkaplan.github.io/2020/08/25/speech-accent-classifier/).
 
 This was developed over a 2-week span in August 2020 as a project for the [Metis](https://thisismetis.com) data science 
 program.
@@ -24,7 +24,9 @@ Fokoue, E. (2020). [UCI Machine Learning Repository - Speaker Accent Recognition
 * `utilities.py` contains files needed for the Flask app to run.
 * `notebooks/` contains the Jupyter Notebook used to do all data analysis and modeling, as well as an accompanying 
    file of Python functions.
-* `presentation.pptx` contains the mock business presentation I made for the Metis course.
+* `templates/` contains HTML files for the Flask application
+* `static/` contains static files for the Flask application as well as the pickled scikit-learn model.
+* `heroku.yml` and `Dockerfile` are used for deployment of the Flask app to Heroku
 
 #### Dependencies
 
